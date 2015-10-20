@@ -32,12 +32,12 @@ projection := basic_projection | [ basic_projection, ... ]
 
 basic_projection := field_projection | array_projection
 
-field_projection := { "field": <pattern>, "include": boolean, recursive: boolean }
+field_projection := { "field": <pattern>, "include": boolean[true], recursive: boolean[false] }
 
-array_projection := { "field": <pattern>, "include": boolean,
-                      match: query_expression, project : projection } }  |
-                    { "field": <pattern>, "include": boolean,
-                      "range": [ from, to ], project : projection}
+array_projection := { "field": <pattern>, "include": boolean[true],
+                      match: query_expression, projection : projection } }  |
+                    { "field": <pattern>, "include": boolean[true],
+                      "range": [ from, to ], projection : projection}
 
 update_query_expression := $all | query_expression
 
@@ -120,11 +120,22 @@ Merge all fields, including nested objects and arrays, except the parent object'
 
 ### Array Merges:
 
-Merge only those elements of the addresses array with `city="Raleigh"`, and only merge the `streetaddress` field.
+Merge only those elements of the `addresses` array where `city="Raleigh"`, and only merge the `streetaddress` field.
 ```javascript
     { $merge : [ 
         { "field": "addresses",  
           "match": { "city": "Raleigh" }, 
+          "projection": { "field": "streetaddress"} 
+        }
+      ]
+    }
+```
+
+Merge only the first 5 elements of the `addresses` array, and only merge the `streetaddress` field.
+```javascript
+    { $merge : [ 
+        { "field": "addresses",
+          "range": [0,4],
           "projection": { "field": "streetaddress"} 
         }
       ]

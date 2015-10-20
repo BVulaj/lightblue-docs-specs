@@ -16,9 +16,9 @@ basic_projection := field_projection | array_projection
 
 field_projection := { "field": <pattern>, "include": boolean[true], "recursive": boolean[false] }
 array_projection := { "field": <pattern>, "include": boolean[true],
-                      match: query_expression, project : projection, sort : sort  } }  |
+                      match: query_expression, projection : projection, sort : sort  } }  |
                     { "field": <pattern>, "include": boolean[true],
-                      "range": [ from, to ], project : projection, "sort": sort }
+                      "range": [ from, to ], projection : projection, "sort": sort }
 ```
 Examples:
 
@@ -41,7 +41,7 @@ city="Raleigh", and only return the streetaddress field.
 Return the first 5 addresses
 ```javascript
  [ { "field": "addresses", "include": true, "range": [ 0, 4 ],
-     "project": { "*", "recursive": true} }]
+     "projection": { "*", "recursive": true} }]
 ```
 
 ### Sorting array elements in projection
