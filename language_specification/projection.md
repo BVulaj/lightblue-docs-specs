@@ -14,10 +14,10 @@ the field remains excluded, and vice versa.
 projection := basic_projection | [ basic_projection, ... ]
 basic_projection := field_projection | array_projection
 
-field_projection := { "field": <pattern>, "include": boolean, recursive: boolean }
-array_projection := { "field": <pattern>, "include": boolean,
+field_projection := { "field": <pattern>, "include": boolean[true], "recursive": boolean[false] }
+array_projection := { "field": <pattern>, "include": boolean[true],
                       match: query_expression, project : projection, sort : sort  } }  |
-                    { "field": <pattern>, "include": boolean,
+                    { "field": <pattern>, "include": boolean[true],
                       "range": [ from, to ], project : projection, "sort": sort }
 ```
 Examples:
@@ -35,12 +35,12 @@ Return everything but firstname:
 Return only those elements of the addresses array with
 city="Raleigh", and only return the streetaddress field.
 ```javascript
- [ { "field": "address", "include": true,
-     "match": { "city": "Raleigh" }, "project": { "streetaddress": true} } ]
+ [ { "field": "addresses", "include": true,
+     "match": { "city": "Raleigh" }, "projection": { "field": "streetaddress"} } ]
 ```
 Return the first 5 addresses
 ```javascript
- [ { "field": "address", "include": true, "range": [ 0, 4 ],
+ [ { "field": "addresses", "include": true, "range": [ 0, 4 ],
      "project": { "*", "recursive": true} }]
 ```
 

@@ -2,23 +2,45 @@
 ```javascript
 update_expression := partial_update_expression |
                     [ partial_update_expression,...]
+                    
 partial_update_expression := primitive_update_expression |
-                             array_update_expression
+                             array_update_expression |
+                             merge_update_expression
+                             
 primitive_update_expression := { $set : { path : rvalue_expression , ...} } |
                                { $unset : path } |
                                { $unset :[ path, ... ] }
                                { $add : { path : rvalue_expression, ... } }
+                               
 rvalue_expression := value | { $valueof : path }
+
 value := primitive_value | json_container
+
 json_container := jsonObjectNode | jsonArrayNode
 
 array_update_expression := { $append : { path : rvalue_expression } } |
                            { $append : { path : [ rvalue_expression, ... ] }} |
                            { $insert : { path : rvalue_expression } } |
                            { $insert : { path : [ rvalue_expression,...] }} |
-                           { $foreach : { path : update_query_expression,
-                                         $update : foreach_update_expression } }
+                           { $foreach : { path : update_query_expression, $update : foreach_update_expression } }
+                                         
+merge_update_expression := { $merge : { merge_update_data, projection } }
+
+merge_update_data := { "data": <entityData>, "upsert": boolean[false] }
+
+projection := basic_projection | [ basic_projection, ... ]
+
+basic_projection := field_projection | array_projection
+
+field_projection := { "field": <pattern>, "include": boolean, recursive: boolean }
+
+array_projection := { "field": <pattern>, "include": boolean,
+                      match: query_expression, project : projection } }  |
+                    { "field": <pattern>, "include": boolean,
+                      "range": [ from, to ], project : projection}
+
 update_query_expression := $all | query_expression
+
 foreach_update_expression := $remove | update_expression
 ```
 
@@ -33,8 +55,8 @@ the first two elements of an array, use:
 ```javascript
      { "$set" : { "path" : value } }
      { "$set" : { "path" : [...] } }
-      { "$set" : { "path" : { ... } } }
-    { "$set" : { "path" : { "$valueof" : field } }
+     { "$set" : { "path" : { ... } } }
+     { "$set" : { "path" : { "$valueof" : field } }
      { "$unset" : "path" }  (array index is supported, can be used to
                            remove elements of array)
      { "$add" : { "path" : number } }
@@ -74,6 +96,39 @@ As of 1.8.0, it is possible to update arrays using objects:
 
 ```javascript
    { "$append" : { "someArray" : { "someValue" : 1, "otherValue": "value" } } }
+```
+
+### Primitive Merges:
+
+Merge `firstname` and `lastname` only:
+```javascript
+    { $merge : [ 
+        { "field": "firstname"}, 
+        { "field": "lastname"} 
+      ]
+    }
+```
+
+Merge all fields, including nested objects and arrays, except the parent object's field `firstname`.  In this case, elements in the array may have their fields updated, and new array items may be added:
+```javascript
+    { $merge : [ 
+        { "field": "*", "recursive": true}, 
+        { "field": "firstname", "include": false} 
+      ]
+    }
+```
+
+### Array Merges:
+
+Merge only those elements of the addresses array with `city="Raleigh"`, and only merge the `streetaddress` field.
+```javascript
+    { $merge : [ 
+        { "field": "addresses",  
+          "match": { "city": "Raleigh" }, 
+          "projection": { "field": "streetaddress"} 
+        }
+      ]
+    }
 ```
 
 ### Updating array elements:
