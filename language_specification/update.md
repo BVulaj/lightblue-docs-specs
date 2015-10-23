@@ -7,9 +7,7 @@ partial_update_expression := primitive_update_expression |
                              array_update_expression
                              
 primitive_update_expression := { $set : { path : rvalue_expression , ...} } |
-                               { $set : { path : rvalue_expression, 
-                                          fields : field_projection | [ field_projection, ... ]
-                                        }
+                               { $set : { path : rvalue_expression }, fields : field_projection | [ field_projection, ... ]
                                { $unset : path } |
                                { $unset :[ path, ... ] }
                                { $add : { path : rvalue_expression, ... } }
@@ -126,7 +124,7 @@ $add is similar to $set
 ##### Examples of partial updates
 
 ```javascript
-{ "$set": { "$this" : { "f1" : "foo", "f2" : "bar" }, "fields" : { "field" : "f2" } } }
+{ "$set": { "$this" : { "f1" : "foo", "f2" : "bar" } } , "fields" : { "field" : "f2" } }
 ```
 Update an object with the given data, but only update field `f2`.
 
@@ -196,9 +194,9 @@ to the value of ```k``` (k is from root of doc) .
     }, 
     "$update" : { 
         "$set": { 
-            "$this" : { "f1" : "foo", "f2" : "bar", "f3" : "jaber" }, 
-            "fields" : { "field" : "f2" } 
-        }
+            "$this" : { "f1" : "foo", "f2" : "bar", "f3" : "jaber" }
+        },
+        "fields" : { "field" : "f2" } 
     } 
 }
 ```
