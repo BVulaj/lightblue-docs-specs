@@ -13,19 +13,19 @@ where Q represents the query, P represents the projection, S represents the sort
 
 Query expression:
 ```
- q=field1:value1,value2[;field2:value...]
+ Q=field1:value1,value2[;field2:value...]
 ```
 Only value equivalence is supported.
 
 Projection expression:
 ```
-  p=field2:1,field3:0,...
+  P=field2:1,field3:0,...
 ```
 :1, included, :0, excluded. Patterns can be used. :1r recursive inclusion, :0r recursive exclusion.
 
 Sort expression:
 ```
-  s=field1:a,field2:d,...
+  S=field1:a,field2:d,...
 ```
 :a means ascending, :d means descending
 
